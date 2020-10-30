@@ -6,8 +6,8 @@ class ListElement {
 
 
 class List {
-    private ListElement head;
-    private ListElement tail;
+    ListElement head;
+    ListElement tail;
     int id=0;
     void addFront(int data)
     {
@@ -37,10 +37,12 @@ class List {
             head = a;               //т.е. список теперь состоит из одного элемента
             tail = a;
             head.id=id;
+            id++;
         } else {
             tail.next = a;          //иначе "старый" последний элемент теперь ссылается на новый
             tail = a;
-            tail.id=id;//а в указатель на последний элемент записываем адрес нового элемента
+            tail.id=id;
+            id++;//а в указатель на последний элемент записываем адрес нового элемента
         }
     }
 
@@ -54,18 +56,16 @@ class List {
         }
     }
     int searhElbyID(int id) {
-        if (head == null)
+        if (head == null) {
             System.out.println("Список пуст");
             return -1;
-
+        }
         if (head == tail) {
             return head.data;
         }
-
         if (head.id == id) {
             return head.data;
         }
-
         ListElement t = head;
         while (t.next != null) {
             if (t.next.id ==id) {
@@ -132,25 +132,18 @@ class List {
         int sum=0;
         if(head == null)
             return -1;
+        sum+= head.data;
 
-        if (head == tail) {
-
-            min= tail.data;
-        }
-
-        if (head.data<= min) {
-            min=head.data;
-        }
 
         ListElement t = head;
         while (t.next != null) {
-            if (t.next.data <=min) {
-                min=t.next.data;
-            }
+
+                sum+=t.next.data;
+
             t = t.next;
         }
 
-        return min;
+        return sum;
     }
 
     int searhEl(int data)
@@ -189,7 +182,9 @@ class List {
         }
 
         if (head.data == data) {    //если первый элемент - тот, что нам нужен
-            head = head.next;       //переключаем указатель начала на второй элемент
+            head = head.next;
+            head.id=0;
+            id--;//переключаем указатель начала на второй элемент
             return;                 //и выходим
         }
 
@@ -198,12 +193,37 @@ class List {
             if (t.next.data == data) {  //проверяем следующий элемент
                 if(tail == t.next)      //если он последний
                 {
-                    tail = t;           //то переключаем указатель на последний элемент на текущий
+                    tail = t;
+                    tail.id--;
+                    id--;//то переключаем указатель на последний элемент на текущий
                 }
-                t.next = t.next.next;   //найденный элемент выкидываем
+                t.next = t.next.next;
+                ListElement t1 = t;       //иначе начинаем искать
+                while (t1.next != null) {
+                    t1.id--;
+                    t1 = t1.next;
+                }
+                    //найденный элемент выкидываем
                 return;                 //и выходим
             }
             t = t.next;                //иначе ищем дальше
         }
+    }
+}
+
+public class Test{
+    public static void main(String[] args) {
+        List list=new List();
+        list.addBack(34);
+        list.addBack(30);
+        list.addBack(2);
+        list.addBack(16);
+        System.out.println( "Max "+list.searhElMAX());
+        System.out.println("Min " +list.searhElMIN());
+        System.out.println("searhEl " +list.searhEl(30));
+        System.out.println("searhElbyID "+list.searhElbyID(2));
+        System.out.println("searhElaver "+list.searhElaver());
+        list.delEl(30);
+        System.out.println("searhElbyID "+list.searhElbyID(1));
     }
 }
