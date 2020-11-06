@@ -1,229 +1,115 @@
-class ListElement {
-    ListElement next;    // указатель на следующий элемент
-    int data;
-    int id;// данные
-}
 
+class MyCollection {
+    private int[] arr;
+    private int size = 0;
 
-class List {
-    ListElement head;
-    ListElement tail;
-    int id=0;
-    void addFront(int data)
-    {
-        ListElement a = new ListElement();  //создаём новый элемент
-        a.data = data;              //инициализируем данные.
-        // указатель на следующий элемент автоматически инициализируется как null
-        if(head == null)            //если список пуст
-        {
-            head = a;
-            tail = a;
-            head.id=id;
-            id++;
-        }
-        else {
-            a.next = head;          //иначе новый элемент теперь ссылается на "бывший" первый
-            head = a;
-            head.id=id;
-            id++;//а указатель на первый элемент теперь ссылается на новый элемент
-        }
+    MyCollection(){
+        arr = new int[0];
     }
 
-    void addBack(int data) {          //добавление в конец списка
-        ListElement a = new ListElement();  //создаём новый элемент
-        a.data = data;
-        if (tail == null)           //если список пуст
-        {                           //то указываем ссылки начала и конца на новый элемент
-            head = a;               //т.е. список теперь состоит из одного элемента
-            tail = a;
-            head.id=id;
-            id++;
-        } else {
-            tail.next = a;          //иначе "старый" последний элемент теперь ссылается на новый
-            tail = a;
-            tail.id=id;
-            id++;//а в указатель на последний элемент записываем адрес нового элемента
-        }
+    MyCollection(int size){
+        arr = new int[size];
+        this.size = size;
     }
 
-    void printList()                //печать списка
-    {
-        ListElement t = head;       //получаем ссылку на первый элемент
-        while (t != null)           //пока элемент существуе
-        {
-            System.out.print(t.data + " "); //печатаем его данные
-            t = t.next;                     //и переключаемся на следующий
-        }
+    private boolean checkBounds(int index){
+        return (index < arr.length && index >= 0);
     }
-    int searhElbyID(int id) {
-        if (head == null) {
-            System.out.println("Список пуст");
-            return -1;
+
+    public int getSize() {
+        return size;
+    }
+
+    public void add(int value){
+        ++size;
+        int[] buffer = new int[size];
+        System.arraycopy(arr,0,buffer,0,size-1);
+        buffer[buffer.length-1] = value;
+        arr = buffer;
+    }
+
+    // return index of element
+    public int searchByValue(int value){
+        for (int i = 0; i < arr.length; ++i){
+            if (arr[i] == value)
+                return i;
         }
-        if (head == tail) {
-            return head.data;
-        }
-        if (head.id == id) {
-            return head.data;
-        }
-        ListElement t = head;
-        while (t.next != null) {
-            if (t.next.id ==id) {
-                return t.next.data;
-            }
-            t = t.next;
-        }
-        System.out.println("Ошибка");
         return -1;
     }
 
-    int searhElMAX()
-    {
-        int max=-100000000;
-        if(head == null)
-            return -1;
+    //return value of element
+    public int searchByIndex(int index){
+        if (index < arr.length && index > 0)
+            return arr[index];
+        throw new ArrayIndexOutOfBoundsException();
+    }
 
-        if (head == tail) {
 
-           max= tail.data;
+    public void deleteByIndex(int index){
+        int[] buffer = new int[--size];
+        if (!checkBounds(index))
+            throw new ArrayIndexOutOfBoundsException();
+        for (int i = 0; i < index; ++i)
+            buffer[i] = arr[i];
+        for (int i = index; i < buffer.length; ++i)
+            buffer[i] = arr[i+1];
+        arr = buffer;
+    }
+
+    public void deleteByValue(int value){
+        int index = searchByValue(value);
+        deleteByIndex(index);
+    }
+
+    public int max(){
+        if (arr.length == 0)
+            throw new NullPointerException();
+        int max = arr[0];
+        for (int i = 1; i < arr.length; ++i){
+            if (arr[i] > max)
+                max = arr[i];
         }
-
-        if (head.data>= max) {
-            max=head.data;
-        }
-
-        ListElement t = head;
-        while (t.next != null) {
-            if (t.next.data >=max) {
-                max=t.next.data;
-            }
-            t = t.next;
-        }
-
         return max;
     }
-    int searhElMIN()
-    {
-        int min=100000000;
-        if(head == null)
-            return -1;
 
-        if (head == tail) {
-
-            min= tail.data;
+    public int min(){
+        if (arr.length == 0)
+            throw new NullPointerException();
+        int min = arr[0];
+        for (int i = 1; i < arr.length; ++i){
+            if (arr[i] < min)
+                min = arr[i];
         }
-
-        if (head.data<= min) {
-            min=head.data;
-        }
-
-        ListElement t = head;
-        while (t.next != null) {
-            if (t.next.data <=min) {
-                min=t.next.data;
-            }
-            t = t.next;
-        }
-
         return min;
     }
-    int searhElaver()
-    {
-        int sum=0;
-        if(head == null)
-            return -1;
-        sum+= head.data;
 
-
-        ListElement t = head;
-        while (t.next != null) {
-
-                sum+=t.next.data;
-
-            t = t.next;
+    public double allAverage(){
+        if (arr.length == 0)
+            throw new NullPointerException();
+        int sum = 0;
+        for (int item :
+                arr) {
+            sum+=item;
         }
-
-        return sum;
-    }
-
-    int searhEl(int data)
-    {
-        if(head == null)
-            return -1;
-
-        if (head == tail) {
-
-            return tail.id;
-        }
-
-        if (head.data == data) {
-            return head.id;
-        }
-
-        ListElement t = head;
-        while (t.next != null) {
-            if (t.next.data == data) {
-                return t.next.id;
-            }
-            t = t.next;
-        }
-        return -1;
-    }
-
-    void delEl(int data)          //удаление элемента
-    {
-        if(head == null)        //если список пуст -
-            return;             //ничего не делаем
-
-        if (head == tail) {     //если список состоит из одного элемента
-            head = null;        //очищаем указатели начала и конца
-            tail = null;
-            return;             //и выходим
-        }
-
-        if (head.data == data) {    //если первый элемент - тот, что нам нужен
-            head = head.next;
-            head.id=0;
-            id--;//переключаем указатель начала на второй элемент
-            return;                 //и выходим
-        }
-
-        ListElement t = head;       //иначе начинаем искать
-        while (t.next != null) {    //пока следующий элемент существует
-            if (t.next.data == data) {  //проверяем следующий элемент
-                if(tail == t.next)      //если он последний
-                {
-                    tail = t;
-                    tail.id--;
-                    id--;//то переключаем указатель на последний элемент на текущий
-                }
-                t.next = t.next.next;
-                ListElement t1 = t;       //иначе начинаем искать
-                while (t1.next != null) {
-                    t1.id--;
-                    t1 = t1.next;
-                }
-                    //найденный элемент выкидываем
-                return;                 //и выходим
-            }
-            t = t.next;                //иначе ищем дальше
-        }
+        return (double)sum/arr.length;
     }
 }
 
-public class Test{
+public class Test {
     public static void main(String[] args) {
-        List list=new List();
-        list.addBack(34);
-        list.addBack(30);
-        list.addBack(2);
-        list.addBack(16);
-        System.out.println( "Max "+list.searhElMAX());
-        System.out.println("Min " +list.searhElMIN());
-        System.out.println("searhEl " +list.searhEl(30));
-        System.out.println("searhElbyID "+list.searhElbyID(2));
-        System.out.println("searhElaver "+list.searhElaver());
-        list.delEl(30);
-        System.out.println("searhElbyID "+list.searhElbyID(1));
+        MyCollection arr = new MyCollection();
+        arr.add(3);
+        arr.add(6);
+        arr.add(4);
+        arr.add(8);
+        arr.add(9);
+        // 3 6 4 8 9
+        System.out.println(arr.max()); // 9
+        System.out.println(arr.min()); // 3
+        System.out.println(arr.allAverage()); // 6.0
+        System.out.println(arr.searchByIndex(2)); // 4
+        arr.deleteByIndex(2); // ok
+        System.out.println(arr.searchByIndex(2)); // 8
+        System.out.println(arr.searchByValue(3)); // 0
     }
 }
